@@ -504,6 +504,8 @@ def api_agendamentos_espaco(espaco_id):
 
     return jsonify({"datas_ocupadas": datas_ocupadas, "motivos_bloqueio": motivos_bloqueio})
 
+with app.app_context():
+    inicializar_banco()
+
 if __name__ == '__main__':
-    inicializar_banco()  # Cria as tabelas e insere os dados iniciais se estiver vazio
     app.run(host='0.0.0.0', port=5000, debug=True)
