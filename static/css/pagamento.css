@@ -1,0 +1,262 @@
+/* ==========================================
+   1. CONFIGURAÇÕES GLOBAIS
+   ========================================== */
+body {
+    font-family: "Playfair Display", serif;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* ==========================================
+   2. CARD PRINCIPAL DE DETALHES
+   ========================================== */
+.modal-card-styled {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+}
+
+.modal-card-styled h3 {
+    text-align: center;
+    color: #113f67;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+/* ==========================================
+   3. CAIXAS DE INFORMAÇÃO E INSTRUÇÕES
+   ========================================== */
+.info-box-gray {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 15px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: #334155;
+    margin-bottom: 15px;
+}
+
+.status-destaque {
+    color: #b45309;
+    font-weight: bold;
+}
+
+.instrucoes-titulo {
+    font-size: 0.8rem;
+    color: #475569;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.instrucoes-box {
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.82rem;
+    text-align: center;
+    color: #1e293b;
+    font-weight: bold;
+    margin-bottom: 20px;
+    font-family: monospace;
+    word-break: break-all;
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* Adiciona um respiro vertical entre a linha do arquivo e a chave PIX */
+}
+
+.arquivo-nome-destaque {
+    font-weight: bold;
+    color: #113f67;
+    display: block;
+}
+
+.instrucoes-subtexto {
+    font-size: 0.8rem;
+    color: #475569;
+    font-weight: bold;
+    display: block;
+}
+
+/* ==========================================
+   4. BOTÕES E AÇÕES
+   ========================================== */
+.buttons-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.buttons-row .btn-modal-action {
+    flex: 1;
+    width: 50%;
+    height: 44px;
+    padding: 0 12px;
+    margin: 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box; 
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-visualizar {
+    background-color: #113f67;
+    color: white;
+}
+
+.btn-visualizar.aviso-btn {
+    background-color: #c5dcf1;
+    color: #113f67;
+    border: 1px solid #cbd5e1;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.btn-visualizar:hover {
+    background-color: #d2d5db;
+    transform: translateY(-1px);
+    color: #113f67;
+}
+.btn-visualizar.aviso-btn:hover {
+    background-color: #113f67;
+    transform: translateY(-1px);
+    color: #d2d5db;
+}
+
+.btn-voltar-acao {
+    background: #d2d5db;
+    color: #113f67;
+    border: 1px solid #556699;
+    font-family: "Playfair Display", serif;
+}
+
+.btn-voltar-acao:hover {
+    background-color: #113f67;
+    transform: translateY(-1px);
+    color: #ffffff;
+}
+
+/* ==========================================
+   5. LIGHTBOX / MODAIS DE VISUALIZAÇÃO
+   ========================================== */
+.lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.lightbox-overlay.modal-hidden {
+    display: none;
+}
+
+.lightbox-content {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    max-width: 650px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.8rem;
+    color: #64748b;
+    cursor: pointer;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.lightbox-close:hover {
+    color: #ef4444;
+}
+
+.lightbox-content h4 {
+    color: #113f67;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.lightbox-img-container {
+    flex: 1;
+    overflow-y: auto;
+    text-align: center;
+    max-height: 75vh;
+}
+
+.lightbox-img-container img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* ==========================================
+   6. MODAL DE AVISO PERSONALIZADO (ALERTA)
+   ========================================== */
+.lightbox-content.lightbox-content-aviso {
+    max-width: 380px;
+    text-align: center;
+    padding: 30px;
+}
+
+.aviso-icone {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.aviso-titulo {
+    color: #113f67;
+    margin-bottom: 10px;
+}
+
+.aviso-texto {
+    font-size: 0.9rem;
+    color: #475569;
+    margin-bottom: 20px;
+}
+
+.aviso-btn {
+    width: 100%;
+}

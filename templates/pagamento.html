@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Solicitação - Condomínio MIX</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/botoes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pagamento.css') }}">
+</head>
+<body>
+    <div class="modal-card-styled">
+        <h3>Detalhes da Solicitação</h3>
+
+        <div class="info-box-gray">
+            <p><strong>Espaço:</strong> {{ reserva.Espaco }}</p>
+            <p><strong>Solicitante:</strong> {{ reserva.morador }}</p>
+            <p><strong>Unidade:</strong> {{ reserva.Unidade }}</p>
+            <p><strong>Data do Evento:</strong> {{ reserva.data }}</p>
+            <p><strong>Status:</strong> <span class="status-destaque">{{ reserva.status }}</span></p>
+        </div>
+
+        <p class="instrucoes-titulo">Instruções / Boleto Enviado pela Administração:</p>
+
+        <div class="instrucoes-box">
+            {% if reserva.boleto and '.' in reserva.boleto and not 'Chave PIX' in reserva.boleto and not 'disponível' in reserva.boleto %}
+                <span class="arquivo-nome-destaque">{{ reserva.boleto }}</span>
+                <span class="instrucoes-subtexto">Chave PIX: condominio.mix@banco.com.br</span>
+            {% else %}
+                {{ reserva.boleto if reserva.boleto else "Chave PIX / Boleto disponível com a Administração." }}
+            {% endif %}
+        </div>
+
+        <div class="buttons-row">
+            {% if reserva.boleto and '.' in reserva.boleto and not 'Chave PIX' in reserva.boleto and not 'disponível' in reserva.boleto %}
+                <button type="button" class="btn-modal-action btn-visualizar" onclick="abrirBoletoModal()">Visualizar Boleto</button>
+            {% else %}
+                <button type="button" class="btn-modal-action btn-visualizar" onclick="mostrarAvisoBoleto()">Visualizar Boleto</button>
+            {% endif %}
+            <a href="javascript:history.back()" class="btn-modal-action btn-voltar-acao">Voltar</a>
+        </div>
+    </div>
+
+    <!-- Modal Lightbox para Visualização do Boleto -->
+    <div id="modalBoletoFullscreen" class="lightbox-overlay modal-hidden">
+        <div class="lightbox-content">
+            <span class="lightbox-close" onclick="fecharBoletoModal()">&times;</span>
+            <h4>Documento do Boleto / PIX</h4>
+            <div class="lightbox-img-container">
+                {% if reserva.boleto and '.' in reserva.boleto and not 'Chave PIX' in reserva.boleto %}
+                    <img src="{{ url_for('static', filename='uploads/' + reserva.boleto) }}" alt="Boleto Digital">
+                {% else %}
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Boleto Digital">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Aviso Personalizado (Sem Boleto Enviado) -->
+    <div id="modalAvisoPersonalizado" class="lightbox-overlay modal-hidden">
+        <div class="lightbox-content lightbox-content-aviso">
+            <div class="aviso-icone">⚠️</div>
+            <h4 class="aviso-titulo">Aviso importante</h4>
+            <p class="aviso-texto">O boleto ainda não foi enviado pela Administração.</p>
+            <button type="button" class="btn-modal-action btn-visualizar aviso-btn" onclick="fecharAvisoBoleto()">OK</button>
+        </div>
+    </div>
+    
+    <footer style="text-align: center; padding: 15px; font-size: 0.85rem; color: #555; margin-top: 30px;">
+        <p>&copy; Desenvolvido por <strong>Denis Henrique Salles Rodrigues e
+                Rodrigues</strong> — 2026 — (Estudante Análise e Desenvolvimento de Sistemas)</p>
+    </footer>
+
+
+    <script src="{{ url_for('static', filename='js/pagamento.js') }}"></script>
+</body>
+</html>

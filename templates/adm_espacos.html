@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.png') }}" type="image/png">
+    <title>Espaços - Administração - Condomínio MIX Residencial</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/botoes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/adm.css') }}">
+</head>
+
+<body>
+    <header class="adm-header">
+        <div class="header-content">
+            <div class="header-icon-wrapper">
+                <img src="{{ url_for('static', filename='img/user.png') }}" alt="Ícone Adm" class="adm-avatar">
+            </div>
+
+            <div class="menu-top-header">
+                <p>Painel Acesso<br>Administração</p>
+            </div>
+
+            <div class="condominio-info">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo do Condomínio MIX Residencial"
+                    class="logo-condominio">
+            </div>
+        </div>
+    </header>
+
+    <nav class="tabs-nav">
+        <a href="{{ url_for('adm') }}" class="tab-item">Todas as reservas</a>
+        <a href="{{ url_for('adm_espacos') }}" class="tab-item active">Gerenciar Espaços</a>
+    </nav>
+
+    <div class="welcome-user">
+        Bem-vindo(a) Sr.(a), <strong>{{ nome_usuario }}</strong> {% if unidade_usuario %}(Unidade: {{ unidade_usuario
+        }}){% endif %}
+    </div>
+
+    <main class="main-container">
+        <div class="page-title-box">
+            <h2>Gerenciamento de Espaços</h2>
+            <p>Consulte e gerencie as configurações dos ambientes do condomínio.</p>
+        </div>
+
+        <div class="espacos-grid">
+            {% for espaco in espacos %}
+            <div class="espaco-card">
+                <img src="{{ url_for('static', filename='img/' + espaco.icone) }}" alt="{{ espaco.nome }}"
+                    class="espaco-img-icon">
+                <h3>{{ espaco.nome | upper }}</h3>
+                <button type="button" class="btn-reservar" data-id="{{ espaco.id }}" data-nome="{{ espaco.nome }}"
+                    data-taxa="{{ espaco.taxa }}" data-horario="{{ espaco.horario }}"
+                    data-capacidade="{{ espaco.capacidade if espaco.capacidade else '' }}"
+                    data-termo="{{ espaco.termo }}" onclick="abrirModalGerenciar(this)">
+                    Gerenciar
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="navigation-footer">
+            <a href="javascript:history.back()" class="btn-voltar">
+                <img src="{{ url_for('static', filename='img/voltar.png') }}" alt="Voltar"> Voltar
+            </a>
+            <a href="{{ url_for('logout') }}" class="btn-sair">
+                <img src="{{ url_for('static', filename='img/sair.png') }}" alt="Ícone Sair"> Sair
+            </a>
+        </div>
+    </main>
+
+    <!-- Modal Único de Gerenciamento ADM -->
+    <div id="modalGerenciarADM" class="modal-overlay modal-hidden">
+        <div class="modal-card modal-card-gerenciar">
+            <span class="close-modal" onclick="fecharModalADM()">&times;</span>
+            <h3 id="modalNomeEspaco" class="modal-title-adm">Gerenciar Espaço</h3>
+
+            <!-- Menu de Opções (Botões Principais) -->
+            <div class="menu-gerenciar-grid">
+                <button type="button" class="btn-opcao-gerenciar" onclick="mostrarSecao('secaoTermo')">
+                    <span>📝 Editar Normas e Termo de Uso</span>
+                </button>
+                <button type="button" class="btn-opcao-gerenciar" onclick="mostrarSecao('secaoTaxa')">
+                    <span>💰 Alterar Taxa e Horário</span>
+                </button>
+                <button type="button" class="btn-opcao-gerenciar" onclick="mostrarSecao('secaoBloqueio')">
+                    <span>🚫 Bloquear Espaço / Manutenção</span>
+                </button>
+                <button type="button" class="btn-opcao-gerenciar" onclick="mostrarSecao('secaoBoletos')">
+                    <span>📄 Anexar / Enviar Boleto</span>
+                </button>
+            </div>
+
+            <!-- Container Separado (Card Interno) para Organizar e Isolar o Conteúdo -->
+            <div class="modal-conteudo-card">
+                <!-- Seção 1: Termo de Uso -->
+                <div id="secaoTermo" class="secao-acao modal-hidden">
+                    <form id="formTermo" method="POST">
+                        <input type="hidden" name="espaco_id" id="inputEspacoIdTermo">
+                        <h4>Editar Termo de Uso</h4>
+                        <textarea name="termo" id="editTermoTexto" class="modal-textarea-styled"></textarea>
+                        <button type="submit" class="btn-salvar-adm">Salvar Alterações</button>
+                    </form>
+                </div>
+
+                <!-- Seção 2: Taxa, Horário e Capacidade -->
+                <div id="secaoTaxa" class="secao-acao modal-hidden">
+                    <form id="formTaxa" method="POST">
+                        <input type="hidden" name="espaco_id" id="inputEspacoIdTaxa">
+                        <h4>Alterar Taxa, Horário e Capacidade</h4>
+                        <label>Capacidade / Convidados:</label>
+                        <input type="text" name="capacidade" id="editCapacidadeVal" class="modal-input-styled">
+                        <label>Taxa de Uso (R$):</label>
+                        <input type="text" name="taxa" id="editTaxaVal" class="modal-input-styled">
+                        <label>Horário de Funcionamento:</label>
+                        <input type="text" name="horario" id="editHorarioVal" class="modal-input-styled">
+                        <button type="submit" class="btn-salvar-adm">Salvar Alterações</button>
+                    </form>
+                </div>
+
+                <!-- Seção 3: Bloqueio -->
+                <div id="secaoBloqueio" class="secao-acao modal-hidden">
+                    <form action="{{ url_for('adm_bloquear_espaco') }}" method="POST" id="formBloqueioAdm">
+                        <input type="hidden" name="espaco_id" id="inputEspacoIdBloqueio">
+
+                        <!-- Campo oculto que enviará a data selecionada no formato DD-MM-AAAA ou AAAA-MM-DD conforme seu backend -->
+                        <input type="hidden" name="data_inicio" id="dataBloqueioSelecionada" required>
+
+                        <h4>Bloquear Espaço para Manutenção</h4>
+
+                        <!-- Mini Calendário Customizado Igual ao do Morador -->
+                        <div class="calendar-container-adm">
+                            <div class="calendar-header">
+                                <button type="button" class="calendar-nav-btn"
+                                    onclick="mudarMesBloqueio(-1)">&#60;</button>
+                                <span id="mesAnoTextoBloqueio" class="calendar-title-text">OUT 2026</span>
+                                <button type="button" class="calendar-nav-btn"
+                                    onclick="mudarMesBloqueio(1)">&#62;</button>
+                            </div>
+
+                            <div class="calendar-weekdays">
+                                <span>dom</span>
+                                <span>2ª</span>
+                                <span>3ª</span>
+                                <span>4ª</span>
+                                <span>5ª</span>
+                                <span>6ª</span>
+                                <span>sá</span>
+                            </div>
+
+                            <div id="calendarDaysBloqueio" class="calendar-grid"></div>
+                        </div>
+
+                        <label style="margin-top: 15px;">Motivo do Bloqueio:</label>
+                        <input type="text" name="motivo" placeholder="Ex: Pintura, Limpeza das caixas..."
+                            class="modal-input-styled" required>
+
+                        <button type="submit" class="btn-salvar-adm btn-danger-adm">Confirmar Bloqueio</button>
+                    </form>
+
+                    <div class="container-bloqueios-ativos">
+                        <h5>Bloqueios Ativos neste Espaço:</h5>
+                        <div id="listaBloqueiosAtivos">
+                            {% for b in bloqueios %}
+                            <div class="item-bloqueio-ativo item-bloqueio-generico" data-espaco-id="{{ b.espaco_id }}">
+                                <span>📅 <strong>{{ b.data }}</strong> - {{ b.motivo }}</span>
+                                <form
+                                    action="{{ url_for('adm_desbloquear_espaco', espaco_id=b.espaco_id, data=b.data) }}"
+                                    method="POST" class="form-desbloqueio-inline">
+                                    <button type="submit" class="btn-desbloquear-mini">🟢 Desbloquear</button>
+                                </form>
+                            </div>
+                            {% endfor %}
+                            <p id="msgNenhumBloqueioDinamica" class="nenhum-bloqueio-texto" style="display: none;">
+                                Nenhum bloqueio cadastrado para este espaço.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção 4: Enviar Boleto (Com filtragem por espaço) -->
+                <div id="secaoBoletos" class="secao-acao modal-hidden">
+                    <form method="POST" enctype="multipart/form-data" id="formEnvioBoleto">
+                        <h4>Enviar Boleto / Comprovante</h4>
+                        <label>Selecione a Reserva:</label>
+                        <select name="reserva_id" id="selectReservaPendente" class="modal-select-styled"
+                            onchange="atualizarAcaoForm(this)" required>
+                            <option value="">-- Selecione uma solicitação --</option>
+                            {% for item in agendamentos %}
+                            {% if item.status in ['Aguardando Pagamento', 'Aguardando Autorização', 'Aprovado'] %}
+                            <option value="{{ item.id }}" data-espaco="{{ item.Espaco | lower }}">
+                                - {{ item.Espaco }} | {{ item.morador }} (Unid: {{ item.Unidade }})
+                            </option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <label class="label-espaco-margem">Arquivo do Boleto (Imagem/PDF):</label>
+                        <input type="file" name="boleto_imagem" class="modal-file-input" required>
+                        <button type="submit" class="btn-salvar-adm">Enviar Boleto ao Morador</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Aviso Padronizado para o ADM -->
+    <div id="modalAvisoAdmPadrao" class="modal-overlay {% if not request.args.get('aviso') %}modal-hidden{% endif %}">
+        <div class="modal-card modal-card-center">
+            <div class="modal-icon-warning">⚠️</div>
+            <h3 class="modal-title-danger">Atenção!</h3>
+            <p id="mensagemAvisoAdmTexto" class="modal-text-success">
+                {{ request.args.get('aviso') if request.args.get('aviso') else '' }}
+            </p>
+            <button type="button" class="btn-confirmar-reserva" onclick="fecharModalAvisoAdm()">OK</button>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 15px; font-size: 0.85rem; color: #555; margin-top: 30px;">
+        <p>&copy; Desenvolvido por <strong>Denis Henrique Salles Rodrigues e
+                Rodrigues</strong> — 2026 — (Estudante Análise e Desenvolvimento de Sistemas)</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>

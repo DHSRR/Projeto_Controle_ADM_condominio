@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.png') }}" type="image/png">
+    <title>Acesso - Reserva de Espaços Condomínio MIX Residencial</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/botoes.css') }}">
+</head>
+
+<body>
+    <header class="header">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo do Condomínio MIX Residencial">
+    </header>
+
+    <main class="container pageLogin">
+        <section class="cardLogin">
+            <h1>Bem-vindo(a) à Gestão de Espaço Comuns</h1>
+            <h2>Gerencie suas reservas de forma rápida e eficiente.</h2>
+            <p class="textoInforme">Faça seu login de acesso</p>
+        </section>
+
+        {% if erro %}
+        <div class="error-alert">
+            ⚠️ {{ erro }}
+        </div>
+        {% endif %}
+
+        <div class="login">
+            <div class="loginBox">
+                <div class="loginAdm">
+                    <h2>ADM</h2>
+                    <img src="{{ url_for('static', filename='img/adm.png') }}" alt="Ícone ADM">
+                </div>
+                <div class="boxCardAdm">
+                    <form action="/login_adm" method="POST" class="form-login">
+                        <div class="form-group">
+                            <div class="form-group-interno">
+                                <label for="cpf-adm">Digite seu CPF</label>
+                                <input id="cpf-adm" type="tel" name="cpf" placeholder="Somente números" maxlength="11"
+                                    inputmode="numeric" pattern="[0-9]*"
+                                    oninput="this.value = this.value.replace(/\D/g, '')" title="Digite apenas números."
+                                    required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="senha-adm">Digite sua SENHA</label>
+                            <input id="senha-adm" type="password" name="senha" placeholder="6 dígitos" maxlength="6"
+                                minlength="6" inputmode="numeric" pattern="\d{6}" title="Digite apenas 6 números"
+                                required>
+                        </div>
+                        <button type="submit" class="btn btn-logar">Logar</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="loginBox">
+                <div class="loginUser">
+                    <h2>Morador</h2>
+                    <img src="{{ url_for('static', filename='img/user.png') }}" alt="Ícone User">
+                </div>
+                <div class="boxCardUser">
+                    <form action="/login_user" method="POST" class="form-login">
+                        <div class="form-group">
+                            <div class="form-group-interno">
+                                <label for="cpf-user">Digite seu CPF</label>
+                                <input id="cpf-user" type="tel" name="cpf" placeholder="Somente números" maxlength="11"
+                                    inputmode="numeric" pattern="[0-9]*"
+                                    oninput="this.value = this.value.replace(/\D/g, '')" title="Digite apenas números."
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="senha-user">Digite sua SENHA</label>
+                            <input id="senha-user" type="password" name="senha" placeholder="6 dígitos" maxlength="6"
+                                minlength="6" inputmode="numeric" pattern="\d{6}" title="Digite apenas 6 números"
+                                required>
+                        </div>
+
+                        <button type="submit" class="btn btn-logar">Logar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer style="text-align: center; padding: 15px; font-size: 0.85rem; color: #555; margin-top: 30px;">
+        <p>&copy; Desenvolvido por <strong>Denis Henrique Salles Rodrigues e
+                Rodrigues</strong> — 2026 — (Estudante Análise e Desenvolvimento de Sistemas)</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>

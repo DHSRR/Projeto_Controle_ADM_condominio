@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.png') }}" type="image/png">
+    <title>Central de Reservas Morador - Condomínio MIX Residencial</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/botoes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+</head>
+
+<body>
+    <header class="user-header">
+        <div class="header-content">
+            <div class="header-icon-wrapper">
+                <img src="{{ url_for('static', filename='img/user.png') }}" alt="Ícone Morador" class="adm-avatar">
+            </div>
+
+            <div class="menu-top-header">
+                <p>Painel Acesso<br>Morador</p>
+            </div>
+
+            <div class="condominio-info">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo do Condomínio MIX Residencial"
+                    class="logo-condominio">
+            </div>
+        </div>
+    </header>
+
+    <nav class="tabs-nav">
+        <a href="{{ url_for('morador_todas') }}" class="tab-item {% if aba_ativa == 'todas' %}active{% endif %}">Todas as reservas</a>
+        <a href="{{ url_for('morador_espacos') }}" class="tab-item">Espaços</a>
+        <a href="{{ url_for('morador_minhas') }}" class="tab-item {% if aba_ativa == 'minhas' %}active{% endif %}">Minhas reservas</a>
+    </nav>
+
+    <div class="welcome-user">
+        Bem-vindo(a) Sr.(a), <strong>{{ nome_usuario }}</strong> {% if unidade_usuario %}(Unidade: {{ unidade_usuario }}){% endif %}
+    </div>
+
+    <main class="main-container">
+        <div class="page-title-box">
+            <h2>{{ titulo }}</h2>
+            <p>Acompanhe os agendamentos registrados do condomínio.</p>
+        </div>
+
+        <div class="reservas-grid">
+            {% for item in agendamentos %}
+            <div class="reserva-card">
+                <div class="card-header-info centralizado">
+                    <div class="espacio-info">
+                        <img src="{{ url_for('static', filename='img/' + ('bbq.png' if 'Churrasqueira' in item.Espaco else ('mudanca.png' if 'Mudança' in item.Espaco else 'festa.png'))) }}"
+                            alt="Ícone" class="card-icon">
+                        <span class="espaco-nome">{{ item.Espaco | upper }}</span>
+                    </div>
+
+                    {% if aba_ativa == 'minhas' %}
+                    <span class="badge 
+                        {% if item.status == 'Processado' %}status-processado
+                        {% elif item.status == 'Aprovado' %}status-aprovado-custom
+                        {% elif item.status == 'Pagamento Confirmado' %}status-PGaprovado-custom
+                        {% elif item.status == 'Aguardando Pagamento' %}status-aguardando-pagamento-custom
+                        {% elif item.status == 'Aguardando Autorização' %}status-aguardando-autorizacao-custom
+                        {% elif item.status == 'Negado' %}status-negado
+                        {% elif 'cancelado' in item.status|lower %}badge-cancelado
+                        {% else %}status-aguardando-custom{% endif %}">
+                        {{ item.status }}
+                    </span>
+                    {% endif %}
+                </div>
+
+                <div class="card-body-info">
+                    <div class="info-row">
+                        <span class="info-label">Morador:</span>
+                        <span class="info-value"><strong>{{ item.morador }}</strong></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Unidade:</span>
+                        <span class="info-value"><strong>{{ item.Unidade }}</strong></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Data e Horário:</span>
+                        <span class="info-value">{{ item.data }} — {{ item.horario }}</span>
+                    </div>
+                </div>
+
+                {% if aba_ativa == 'minhas' %}
+                <div class="reserva-actions-container">
+                    {% if item.data_passada %}
+                    <div class="card-footer-status">Processado</div>
+                    {% else %}
+                        {% if not ('mudança' in item.Espaco.lower() or 'mudanca' in item.Espaco.lower()) and item.status == 'Aguardando Pagamento' %}
+                        <a href="{{ url_for('morador_pagamento', agend_id=item.id) }}" class="btn-pagar">
+                            📄 Visualizar Boleto / Pagar
+                        </a>
+                        {% endif %}
+
+                        {% if item.status not in ['Negado', 'Cancelado', 'Cancelado / Solicitação de Reembolso'] %}
+                        <form action="{{ url_for('morador_cancelar', agend_id=item.id) }}" method="POST" id="form-cancelar-{{ item.id }}">
+                            <button type="button" class="btn-action btn-negar btn-cancelar-full" onclick="abrirModalCancelar('{{ item.id }}')">
+                                <img src="{{ url_for('static', filename='img/cancelar.png') }}" alt="Cancelar">
+                                {% if 'mudança' in item.Espaco.lower() or 'mudanca' in item.Espaco.lower() %}Cancelar{% else %}Cancelar / Reembolso{% endif %}
+                            </button>
+                        </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                {% endif %}
+
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="navigation-footer">
+            <a href="javascript:history.back()" class="btn-voltar">
+                <img src="{{ url_for('static', filename='img/voltar.png') }}" alt="Voltar"> Voltar
+            </a>
+            <a href="{{ url_for('logout') }}" class="btn-sair">
+                <img src="{{ url_for('static', filename='img/sair.png') }}" alt="Ícone Sair"> Sair
+            </a>
+        </div>
+    </main>
+
+    <!-- Modal de Confirmação de Cancelamento -->
+    <div id="modalCancelar" class="modal-overlay modal-hidden">
+        <div class="modal-card modal-card-center">
+            <div class="modal-icon-warning">⚠️</div>
+            <h3 class="modal-title-warning">
+                Confirmar Cancelamento
+            </h3>
+            <p class="modal-text-warning">
+                Deseja realmente cancelar este agendamento e solicitar o reembolso?
+            </p>
+            <div class="modal-buttons-flex">
+                <button type="button" id="btnSimCancelar" class="btn-action btn-negar modal-btn-padding">Sim, Cancelar</button>
+                <button type="button" class="btn-action btn-aprovar modal-btn-padding" onclick="fecharModalCancelar()">Voltar</button>
+            </div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 15px; font-size: 0.85rem; color: #555; margin-top: 30px;">
+        <p>&copy; Desenvolvido por <strong>Denis Henrique Salles Rodrigues e
+                Rodrigues</strong> — 2026 — (Estudante Análise e Desenvolvimento de Sistemas)</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>

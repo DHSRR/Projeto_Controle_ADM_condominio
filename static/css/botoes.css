@@ -1,0 +1,117 @@
+/* ==========================================
+   1. BOTÃO BASE UNIVERSAL
+   ========================================== */
+.btn {
+    background: #ebf3fa;
+    font-family: "Komika", cursive, sans-serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid #556699;
+    border-radius: 50px;
+    padding: 8px 24px;
+    box-shadow: 2px 2px #444444;
+    color: #000000;
+    display: inline-block;
+    text-align: center;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+/* ==========================================
+   2. BOTÕES PRIMÁRIOS E SECUNDÁRIOS
+   ========================================== */
+.btn-primary, 
+.btn-secondary {
+    background: #d2d5db;
+    color: #111111;
+    border: 1px solid #556699;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-family: "Playfair Display", serif;
+    font-size: 0.85rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover, 
+.btn-secondary:hover {
+    background: #bcbfc6;
+    transform: translateY(-2px);
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+.btn-secondary img, 
+.btn-primary img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+/* ==========================================
+   3. CLASSES UTILITÁRIAS DO PAINEL ADM (BLOQUEIOS)
+   ========================================== */
+.alerta-aviso-adm {
+    background-color: #fef3c7;
+    border: 1px solid #f59e0b;
+    color: #b45309;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.container-bloqueios-ativos {
+    margin-top: 15px;
+    border-top: 1px solid #cbd5e1;
+    padding-top: 10px;
+}
+
+.container-bloqueios-ativos h5 {
+    font-size: 0.85rem;
+    color: #113f67;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.item-bloqueio-ativo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: 0.78rem;
+}
+
+.form-desbloqueio-inline {
+    margin: 0;
+}
+
+.btn-desbloquear-mini{
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.nenhum-bloqueio-texto {
+    font-size: 0.75rem;
+    color: #64748b;
+}
