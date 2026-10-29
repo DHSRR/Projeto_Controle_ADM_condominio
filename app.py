@@ -355,7 +355,7 @@ def adm_desbloquear_espaco(espaco_id, data):
         db.session.delete(bloqueio)
         db.session.commit()
         
-    return redirect(url_for('adm_espacos'))
+    return redirect(url_for('adm_espacos', aviso='Espaço desbloqueado com sucesso!'))
 
 # ==========================================
 # PAINEL DO MORADOR E RESERVAS

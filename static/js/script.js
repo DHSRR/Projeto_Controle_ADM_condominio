@@ -301,7 +301,9 @@ function abrirModalGerenciar(button) {
     const capacidade = button.getAttribute('data-capacidade'); // LEITURA DA CAPACIDADE
     const termo = button.getAttribute('data-termo');
 
-    const idEspacoGlobalAtual = espacoId.toLowerCase().trim();
+    // ATRIBUI À VARIÁVEL GLOBAL CORRETA QUE O CALENDÁRIO UTILIZA
+    espacoAtualId = espacoId.toLowerCase().trim(); 
+    const idEspacoGlobalAtual = espacoAtualId;
     const nomeEspacoNormalizado = espacoNome.toLowerCase().trim();
 
     const inputTermo = document.getElementById('inputEspacoIdTermo');
@@ -359,7 +361,9 @@ function abrirModalGerenciar(button) {
 
     dataAtualBloqueio = new Date();
     dataSelecionadaBloqueio = null;
-    renderizarCalendarioBloqueio();
+
+    // CHAMA A FUNÇÃO QUE BUSCA OS BLOQUEIOS DA API E PINTA O CALENDÁRIO CORRETAMENTE
+    carregarBloqueiosAdmCalendario();
 
     let temBloqueioVisivel = false;
     const itensBloqueio = document.querySelectorAll('.item-bloqueio-generico');
@@ -535,6 +539,7 @@ document.addEventListener('change', function(event) {
    ========================================== */
 let dataAtualBloqueio = new Date();
 let dataSelecionadaBloqueio = null;
+let datasBloqueadasAdm = [];
 
 function renderizarCalendarioBloqueio() {
     const daysContainer = document.getElementById('calendarDaysBloqueio');
@@ -571,8 +576,22 @@ function renderizarCalendarioBloqueio() {
         const dataIterada = new Date(ano, mes, dia);
         dataIterada.setHours(0, 0, 0, 0);
 
+        const estaBloqueadoOuOcupado = datasBloqueadasAdm.includes(dataString);
+
         if (dataIterada < hoje) {
             dayEl.classList.add('passado');
+        } else if (estaBloqueadoOuOcupado) {
+            // Pinta o dia de vermelho/ocupado no painel do ADM
+            dayEl.classList.add('reservado');
+            dayEl.onclick = () => {
+                const msgAviso = document.getElementById('mensagemAvisoTexto');
+                const modAviso = document.getElementById('modalAviso');
+                if (msgAviso) msgAviso.innerText = `Atenção: A data ${dataString} já possui bloqueio ou agendamento ativo neste espaço.`;
+                if (modAviso) {
+                    modAviso.classList.remove('modal-hidden');
+                    modAviso.style.display = 'flex';
+                }
+            };
         } else {
             dayEl.onclick = () => selecionarDataBloqueio(dataString, dayEl);
 
@@ -603,5 +622,21 @@ function selecionarDataBloqueio(dataStr, elemento) {
 
 function mudarMesBloqueio(delta) {
     dataAtualBloqueio.setMonth(dataAtualBloqueio.getMonth() + delta);
-    renderizarCalendarioBloqueio();
+    carregarBloqueiosAdmCalendario();
+}
+
+// Função que busca os bloqueios do espaço atual na API e atualiza o calendário do ADM
+function carregarBloqueiosAdmCalendario() {
+    if (!espacoAtualId) return;
+
+    fetch('/api/agendamentos_espaco/' + espacoAtualId)
+        .then(res => res.json())
+        .then(data => {
+            datasBloqueadasAdm = data.datas_ocupadas || [];
+            renderizarCalendarioBloqueio();
+        })
+        .catch(err => {
+            console.error("Erro ao buscar bloqueios para o ADM:", err);
+            renderizarCalendarioBloqueio();
+        });
 }
